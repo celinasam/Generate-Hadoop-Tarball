@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <property>
+    <name>mapred.job.tracker</name>
+    <value>localhost:9001</value>
+  </property>
+  <property>
+    <name>mapred.system.dir</name>
+   <value>/opt/test/0.22.0/mapreduce/system</value>
+  </property>
+  <property>
+   <name>mapred.local.dir</name>
+    <value>/opt/test/0.22.0/mapreduce/local</value>
+  </property>
+  <property>
+    <name>mapred.child.java.opts</name>
+    <value>-Xmx512m</value>
+  </property>
+    <property>
+    <name>webinterface.private.actions</name>
+    <value>true</value>
+  </property>
+</configuration>
