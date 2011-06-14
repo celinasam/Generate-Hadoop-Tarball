@@ -90,10 +90,10 @@ For compile, install and test facebook hadoop 0.21.1 and 0.22.0 version (use 0.2
 - go to installation directory of Generate-Hadoop-Tarball
   cd Generate-Hadoop-Tarball
 
-- generate tarball
+- generate tarball for first compilation
   ./generate-tarball.sh 0.21.1 /opt
 
-- or regenerate tarball
+- or regenerate tarball for others compilations
   ./generate-tarball-recompile.sh 0.21.1 /opt
 
 - if ok then there is a tarball in /opt/hadoop-common/build/
