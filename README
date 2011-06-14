@@ -131,6 +131,6 @@ For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 version
   hadoop org.apache.hadoop.raid.RaidShell -showConfig # raid configuration
 
 - stop test
-  stop-mapred.sh
   start-raidnode.sh # not necessary for facebook hadoop 0.20.1 version
+  stop-mapred.sh
   stop-dfs.sh
