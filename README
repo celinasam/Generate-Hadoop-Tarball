@@ -35,7 +35,7 @@ For compile, install and test facebook hadoop 0.20.1 version:
 - go to installation directory
   cd /opt
 
-- install and test hadoop
+- install, test hadoop and stop
  ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.20.1 /opt
 
 
@@ -51,7 +51,7 @@ For install and test hadoop 0.21.0 version:
 - Download tarball from http://www.apache.org/dist/hadoop/core/
   ls -lagt /opt/hadoop-0.21.0.tar.gz
 
-- install and test hadoop
+- install, test hadoop and stop
  ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.0 /opt
 
 
@@ -105,5 +105,32 @@ For compile, install and test facebook hadoop 0.21.1 and 0.22.0 version (use 0.2
 - go to hadoop installation directory
   cd /opt
 
-- install and test hadoop
+- install, test hadoop and stop
   ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.1 /opt
+
+
+For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.20.1, 0.21.0, 0.21.1 and 0.22.0 when applied)
+
+- go to installation directory of Generate-Hadoop-Tarball
+  cd Generate-Hadoop-Tarball
+
+- edit raid.xml with correct srcPath prefix and erasure code type (xor or rs)
+
+- configure raid
+ ./conf-raid.sh 0.20.1 /opt
+
+- edit hdfs-raid-site.xml with correct paths and others parameters
+
+- copy new hdfs-site.xml 
+  cp Generate-Hadoop-Tarball/conf/hdfs-raid-site.xml /opt/test/hadoop-0.20.1-dev/conf/hdfs-site.xml
+
+- test new configurations
+  start-dfs.sh
+  start-mapred.sh
+  start-raidnode.sh # not necessary for facebook hadoop 0.20.1 version
+  hadoop org.apache.hadoop.raid.RaidShell -showConfig # raid configuration
+
+- stop test
+  stop-mapred.sh
+  start-raidnode.sh # not necessary for facebook hadoop 0.20.1 version
+  stop-dfs.sh
