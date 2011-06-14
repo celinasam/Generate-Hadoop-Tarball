@@ -1,0 +1,109 @@
+This files were based on scripts of 
+https://issues.apache.org/jira/browse/HADOOP-6342 and https://issues.apache.org/jira/browse/HADOOP-6846
+
+
+For installation:
+
+- go to installation directory of Generate-Hadoop-Tarball
+  cd Generate-Hadoop-Tarball
+- all shell files with execution permission
+  chmod +x *.sh
+
+
+
+For compile, install and test facebook hadoop 0.20.1 version:
+
+- create a installation directory, for example, /opt
+  mkdir /opt
+
+- go to installation directory
+  cd /opt
+
+- create a clone
+  git clone https://github.com/facebook/hadoop-20-warehouse.git
+
+- compile
+  cd /opt/hadoop-20-warehouse
+  ant -Dresolvers=internal -Djava5.home=/usr/lib/jvm/jdk1.5.0_22 -Dforrest.home=/opt/apache-forrest-0.9 -Djavac.args="-Xlint -Xmaxwarns 3000" binary > ant.log 2>&1
+
+- if ok, there is a tarball in build dir
+  ls -lagt /opt/hadoop-20-warehouse/build/hadoop-0.20.1-dev-bin.tar.gz
+
+- copy generated tarball to installation directory 
+  cp /opt/hadoop-20-warehouse/build/hadoop-0.20.1-dev-bin.tar.gz /opt
+
+- go to installation directory
+  cd /opt
+
+- install and test hadoop
+ ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.20.1 /opt
+
+
+
+For install and test hadoop 0.21.0 version:
+
+- create a installation directory, for example, /opt
+  mkdir /opt
+
+- go to installation directory
+  cd /opt
+
+- Download tarball from http://www.apache.org/dist/hadoop/core/
+  ls -lagt /opt/hadoop-0.21.0.tar.gz
+
+- install and test hadoop
+ ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.0 /opt
+
+
+
+For compile, install and test facebook hadoop 0.21.1 and 0.22.0 version (use 0.21.1 or 0.22.0 when applied)
+
+- create a installation directory, for example, /opt
+  mkdir /opt
+
+- go to installation directory
+  cd /opt
+
+- be sure if common, hdfs and mapreduce do not exist
+  rm -rf /opt/hadoop-common
+  rm -rf /opt/hadoop-hdfs
+  rm -rf /opt/hadoop-mapreduce
+
+- make a checkout of hadoop svn repositories
+  ./Generate-Hadoop-Tarball/checkout.sh 0.21.1 /opt
+
+- verify /opt/check-{common,hdfs,mapreduce}.out
+  tail /opt/check-{common,hdfs,mapreduce}.out
+
+- go to common installation directory
+  cd /opt/hadoop-common
+
+- apply patch HADOOP-6342.patch https://issues.apache.org/jira/browse/HADOOP-6342
+  patch -p0 < HADOOP-6342.patch
+
+- copy combine-bindirs.sh of Generate-Hadoop-Tarball to combine-bindirs.sh
+  cp Generate-Hadoop-Tarball/combine-bindirs.sh src/buildscripts/
+
+- all shell files with execution permission
+  chmod +x src/buildscripts/*.sh
+
+- go to installation directory of Generate-Hadoop-Tarball
+  cd Generate-Hadoop-Tarball
+
+- generate tarball
+  ./generate-tarball.sh 0.21.1 /opt
+
+- or regenerate tarball
+  ./generate-tarball-recompile.sh 0.21.1 /opt
+
+- if ok then there is a tarball in /opt/hadoop-common/build/
+  ls -lagt /opt/hadoop-common/build/hadoop-0.21.1.tar.gz
+
+- copy generated tarball to installation directory 
+  cp /opt/hadoop-common/build/hadoop-0.21.1.tar.gz /opt
+
+- go to hadoop installation directory
+  cd /opt
+
+- install and test hadoop
+  ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.1 /opt
