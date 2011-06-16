@@ -9,42 +9,10 @@ For download Generated-Hadoop-Tarball:
 
 
 
-For installation of facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 versions:
+For installation of 0.21.0, 0.21.1 and 0.22.0 versions:
 
 - go to installation directory of Generate-Hadoop-Tarball
   cd Generate-Hadoop-Tarball
-- all shell files with execution permission
-  chmod +x *.sh
-
-
-
-For compile, install and test facebook hadoop 0.20.1 version:
-
-- create a installation directory, for example, /opt
-  mkdir /opt
-
-- go to installation directory
-  cd /opt
-
-- create a clone
-  git clone https://github.com/facebook/hadoop-20-warehouse.git
-
-- compile
-  cd /opt/hadoop-20-warehouse
-  ant -Dresolvers=internal -Djava5.home=/usr/lib/jvm/jdk1.5.0_22 -Dforrest.home=/opt/apache-forrest-0.9 -Djavac.args="-Xlint -Xmaxwarns 3000" binary > ant.log 2>&1
-
-- if ok, there is a tarball in build dir
-  ls -lagt /opt/hadoop-20-warehouse/build/hadoop-0.20.1-dev-bin.tar.gz
-
-- copy generated tarball to installation directory 
-  cp /opt/hadoop-20-warehouse/build/hadoop-0.20.1-dev-bin.tar.gz /opt
-
-- go to installation directory
-  cd /opt
-
-- install, test hadoop and stop
- ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.20.1 /opt
-
 
 
 For install and test hadoop 0.21.0 version:
@@ -63,7 +31,7 @@ For install and test hadoop 0.21.0 version:
 
 
 
-For compile, install and test facebook hadoop 0.21.1 and 0.22.0 version (use 0.21.1 or 0.22.0 when applied)
+For compile, install and test 0.22.0 version (use 0.21.1 or 0.22.0 when applied)
 
 - create a installation directory, for example, /opt
   mkdir /opt
@@ -116,7 +84,7 @@ For compile, install and test facebook hadoop 0.21.1 and 0.22.0 version (use 0.2
   ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.1 /opt
 
 
-For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.20.1, 0.21.0, 0.21.1 and 0.22.0 when applied)
+For configure raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.21.0, 0.21.1 and 0.22.0 when applied)
 
 - go to installation directory of Generate-Hadoop-Tarball
   cd Generate-Hadoop-Tarball
@@ -129,13 +97,12 @@ For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 version
 - edit hdfs-raid-site.xml with correct paths and others parameters
 
 - copy new hdfs-site.xml 
-  example for 0.20.1: cp Generate-Hadoop-Tarball/conf/hdfs-raid-site.xml /opt/test/hadoop-0.20.1-dev/conf/hdfs-site.xml
-  example for 0.21.0: cp Generate-Hadoop-Tarball/conf/hdfs-raid-site.xml /opt/test/hadoop-0.21.0/conf/hdfs-site.xml
+  cp Generate-Hadoop-Tarball/conf/hdfs-raid-site.xml /opt/test/hadoop-0.21.0/conf/hdfs-site.xml
 
 - test new configurations
   start-dfs.sh
-  start-mapred.sh # for 0.20.1 version, it starts raidnode too
-  start-raidnode.sh # not necessary for facebook hadoop 0.20.1 version
+  start-mapred.sh
+  start-raidnode.sh
   hadoop org.apache.hadoop.raid.RaidShell -showConfig # raid configuration
 
 - copy to hdfs at least one file with more than 128MB of size (2 blocks of 64MB)
@@ -143,6 +110,6 @@ For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 version
   hadoop fs -copyToLocal ubuntu-10.10-netbook-i386.iso input/ubuntu-10.10-netbook-i386.iso
 
 - stop test
-  stop-raidnode.sh # not necessary for facebook hadoop 0.20.1 version
-  stop-mapred.sh # for 0.20.1 version, it stops raidnode too
+  stop-raidnode.sh
+  stop-mapred.sh
   stop-dfs.sh
