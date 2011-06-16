@@ -9,11 +9,8 @@ export BRANCH=`echo ${VERSION:0:4}`
 thisdir=`dirname "$0"`
 thisdir=`cd "$thisdir"; pwd`
 
-if [[ $VERSION == "0.20.1"  ]]; then
-  export HADOOP_HOME=$3/hadoop-$VERSION-dev
-else
-  export HADOOP_HOME=$3/hadoop-$VERSION
-fi
+export HADOOP_HOME=$3/hadoop-$VERSION
+
 export PATH=$HADOOP_HOME/bin:$PATH
 export CLASSPATH=.:$HADOOP_HOME/*:$HADOOP_HOME/lib/*
 
@@ -78,12 +75,8 @@ echo '  </property>' >> $HADOOP_HOME/conf/mapred-site.xml
 echo '</configuration>' >> $HADOOP_HOME/conf/mapred-site.xml
 
 echo 'export JAVA_HOME=/usr/lib/jvm/java-6-sun' >> $HADOOP_HOME/conf/hadoop-env.sh
-if [[ $VERSION == "0.20.1"  ]]; then
-  echo "export HADOOP_HOME=/opt/test/hadoop-$VERSION-dev" >> $HADOOP_HOME/conf/hadoop-env.sh
-else
-  echo "export HADOOP_HOME=/opt/test/hadoop-$VERSION" >> $HADOOP_HOME/conf/hadoop-env.sh
-fi
-echo "export HADOOP_PID_DIR=/opt/test/hadoop-$VERSION/pids" >> $HADOOP_HOME/conf/hadoop-env.sh
-echo "export HADOOP_LOG_DIR=/opt/test/hadoop-$VERSION/logs" >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export HADOOP_HOME="$3"/test/hadoop-$VERSION" >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export HADOOP_PID_DIR="$3"/test/hadoop-$VERSION/pids" >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export HADOOP_LOG_DIR="$3"/test/hadoop-$VERSION/logs" >> $HADOOP_HOME/conf/hadoop-env.sh
 echo 'export HADOOP_IDENT_STRING=hadoop' >> $HADOOP_HOME/conf/hadoop-env.sh
-echo "export HADOOP_CLASSPATH=/opt/test/hadoop-$VERSION/lib" >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export HADOOP_CLASSPATH="$3"/test/hadoop-$VERSION/lib" >> $HADOOP_HOME/conf/hadoop-env.sh

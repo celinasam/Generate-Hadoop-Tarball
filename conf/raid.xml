@@ -4,7 +4,7 @@
         <erasureCode>rs</erasureCode>
         <property>
           <name>srcReplication</name>
-          <value>1</value>
+          <value>3</value>
           <description> pick files for RAID only if their replication factor is
                         greater than or equal to this value.
           </description>

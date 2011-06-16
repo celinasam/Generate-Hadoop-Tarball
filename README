@@ -9,10 +9,13 @@ For download Generated-Hadoop-Tarball:
 
 
 
-For installation of 0.21.0, 0.21.1 and 0.22.0 versions:
+For installation of facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 versions:
 
 - go to installation directory of Generate-Hadoop-Tarball
   cd Generate-Hadoop-Tarball
+- all shell files with execution permission
+  chmod +x *.sh
+
 
 
 For install and test hadoop 0.21.0 version:
@@ -31,7 +34,7 @@ For install and test hadoop 0.21.0 version:
 
 
 
-For compile, install and test 0.22.0 version (use 0.21.1 or 0.22.0 when applied)
+For compile, install and test facebook hadoop 0.21.1 and 0.22.0 version (use 0.21.1 or 0.22.0 when applied)
 
 - create a installation directory, for example, /opt
   mkdir /opt
@@ -84,7 +87,7 @@ For compile, install and test 0.22.0 version (use 0.21.1 or 0.22.0 when applied)
   ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.1 /opt
 
 
-For configure raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.21.0, 0.21.1 and 0.22.0 when applied)
+For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.20.1, 0.21.0, 0.21.1 and 0.22.0 when applied)
 
 - go to installation directory of Generate-Hadoop-Tarball
   cd Generate-Hadoop-Tarball
@@ -92,7 +95,7 @@ For configure raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.21.0, 0.21.1 a
 - edit raid.xml with correct srcPath prefix and erasure code type (xor or rs)
 
 - configure raid
- ./conf-raid.sh 0.20.1 /opt
+ ./conf-raid.sh 0.21.0 /opt
 
 - edit hdfs-raid-site.xml with correct paths and others parameters
 
@@ -101,8 +104,8 @@ For configure raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.21.0, 0.21.1 a
 
 - test new configurations
   start-dfs.sh
-  start-mapred.sh
-  start-raidnode.sh
+  start-mapred.sh #
+  start-raidnode.sh # 
   hadoop org.apache.hadoop.raid.RaidShell -showConfig # raid configuration
 
 - copy to hdfs at least one file with more than 128MB of size (2 blocks of 64MB)
