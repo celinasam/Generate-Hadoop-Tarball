@@ -1,6 +1,7 @@
 This files were based on scripts of 
 https://issues.apache.org/jira/browse/HADOOP-6342 and https://issues.apache.org/jira/browse/HADOOP-6846
 
+All instructions are made for pseudo-distributed operation (for hadoop running on a single-node in a pseudo-distributed mode where each hadoop daemon runs in a separate java process).
 
 For installation:
 
