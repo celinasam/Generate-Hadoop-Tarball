@@ -123,7 +123,8 @@ For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 version
 - edit hdfs-raid-site.xml with correct paths and others parameters
 
 - copy new hdfs-site.xml 
-  cp Generate-Hadoop-Tarball/conf/hdfs-raid-site.xml /opt/test/hadoop-0.20.1-dev/conf/hdfs-site.xml
+  example for 0.20.1: cp Generate-Hadoop-Tarball/conf/hdfs-raid-site.xml /opt/test/hadoop-0.20.1-dev/conf/hdfs-site.xml
+  example for 0.21.0: cp Generate-Hadoop-Tarball/conf/hdfs-raid-site.xml /opt/test/hadoop-0.21.0/conf/hdfs-site.xml
 
 - test new configurations
   start-dfs.sh
