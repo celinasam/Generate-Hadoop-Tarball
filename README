@@ -3,7 +3,13 @@ https://issues.apache.org/jira/browse/HADOOP-6342 and https://issues.apache.org/
 
 All instructions are made for pseudo-distributed operation (for hadoop running on a single-node in a pseudo-distributed mode where each hadoop daemon runs in a separate java process).
 
-For installation:
+For download Generated-Hadoop-Tarball:
+
+- git clone https://github.com/celinasam/Generate-Hadoop-Tarball
+
+
+
+For installation of facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 versions:
 
 - go to installation directory of Generate-Hadoop-Tarball
   cd Generate-Hadoop-Tarball
