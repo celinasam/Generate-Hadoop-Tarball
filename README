@@ -128,7 +128,7 @@ For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 version
 
 - test new configurations
   start-dfs.sh
-  start-mapred.sh
+  start-mapred.sh # for 0.20.1 version, it starts raidnode too
   start-raidnode.sh # not necessary for facebook hadoop 0.20.1 version
   hadoop org.apache.hadoop.raid.RaidShell -showConfig # raid configuration
 
@@ -138,5 +138,5 @@ For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 version
 
 - stop test
   stop-raidnode.sh # not necessary for facebook hadoop 0.20.1 version
-  stop-mapred.sh
+  stop-mapred.sh # for 0.20.1 version, it stops raidnode too
   stop-dfs.sh
