@@ -1,7 +1,7 @@
    <configuration>
     <srcPath prefix="hdfs://localhost:9000/user/hadoop/input">
       <policy name = "teste">
-        <erasureCode>rs</erasureCode>
+        <erasureCode>xor</erasureCode>
         <property>
           <name>srcReplication</name>
           <value>3</value>

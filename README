@@ -28,7 +28,7 @@ For install and test hadoop 0.21.0 version:
   ls -lagt /opt/hadoop-0.21.0.tar.gz
 
 - install, test hadoop and stop
- Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.0 /opt
+  Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.0 /opt
 
 
 
@@ -93,7 +93,7 @@ For configure and test raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.20.1,
 - edit conf/raid.xml with correct srcPath prefix and erasure code type (xor or rs)
 
 - configure raid
- ./conf-raid.sh 0.21.0 /opt
+  conf-raid.sh 0.21.0 /opt
 
 - edit conf/hdfs-raid-site.xml with correct paths and others parameters
 
@@ -115,7 +115,7 @@ For configure and test raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.20.1,
 
 - copy to hdfs at least one file with more than 128MB of size (2 blocks of 64MB)
   an example: ubuntu-10.10-netbook-i386.iso file has about 700MB
-  hadoop fs -copyToLocal ubuntu-10.10-netbook-i386.iso input/ubuntu-10.10-netbook-i386.iso
+  hadoop fs -copyFromLocal ubuntu-10.10-netbook-i386.iso input
 
 - stop test
   stop-raidnode.sh
