@@ -1,5 +1,5 @@
    <configuration>
-    <srcPath prefix="hdfs://localhost:9000/user/hadoop/arquivos-teste">
+    <srcPath prefix="hdfs://localhost:9000/user/hadoop/input">
       <policy name = "teste">
         <erasureCode>rs</erasureCode>
         <property>
