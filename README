@@ -131,6 +131,10 @@ For configure raid for facebook hadoop 0.20.1, 0.21.0, 0.21.1 and 0.22.0 version
   start-raidnode.sh # not necessary for facebook hadoop 0.20.1 version
   hadoop org.apache.hadoop.raid.RaidShell -showConfig # raid configuration
 
+- copy to hdfs at least one file with more than 128MB of size (2 blocks of 64MB)
+  an example: ubuntu-10.10-netbook-i386.iso file has about 700MB
+  hadoop fs -copyToLocal ubuntu-10.10-netbook-i386.iso input/ubuntu-10.10-netbook-i386.iso
+
 - stop test
   stop-raidnode.sh # not necessary for facebook hadoop 0.20.1 version
   stop-mapred.sh
