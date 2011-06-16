@@ -74,9 +74,9 @@ echo '    <value>true</value>' >> $HADOOP_HOME/conf/mapred-site.xml
 echo '  </property>' >> $HADOOP_HOME/conf/mapred-site.xml
 echo '</configuration>' >> $HADOOP_HOME/conf/mapred-site.xml
 
-echo 'export JAVA_HOME=/usr/lib/jvm/java-6-sun' >> $HADOOP_HOME/conf/hadoop-env.sh
-echo "export HADOOP_HOME="$3"/test/hadoop-$VERSION" >> $HADOOP_HOME/conf/hadoop-env.sh
-echo "export HADOOP_PID_DIR="$3"/test/hadoop-$VERSION/pids" >> $HADOOP_HOME/conf/hadoop-env.sh
-echo "export HADOOP_LOG_DIR="$3"/test/hadoop-$VERSION/logs" >> $HADOOP_HOME/conf/hadoop-env.sh
-echo 'export HADOOP_IDENT_STRING=hadoop' >> $HADOOP_HOME/conf/hadoop-env.sh
-echo "export HADOOP_CLASSPATH="$3"/test/hadoop-$VERSION/lib" >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export JAVA_HOME=/usr/lib/jvm/java-6-sun" >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export HADOOP_HOME="$HADOOP_HOME >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export HADOOP_PID_DIR="$HADOOP_HOME"/pids" >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export HADOOP_LOG_DIR="$HADOOP_HOME"/logs" >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export HADOOP_IDENT_STRING=hadoop" >> $HADOOP_HOME/conf/hadoop-env.sh
+echo "export HADOOP_CLASSPATH="$HADOOP_HOME"/lib" >> $HADOOP_HOME/conf/hadoop-env.sh
