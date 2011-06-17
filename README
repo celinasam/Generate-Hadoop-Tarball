@@ -9,14 +9,7 @@ For download Generated-Hadoop-Tarball:
 
 
 
-For installation of 0.21.0, 0.21.1 and 0.22.0 versions:
-
-- go to installation directory of Generate-Hadoop-Tarball
-  cd Generate-Hadoop-Tarball
-
-
-
-For install and test hadoop 0.21.0 version:
+For install and test hadoop 0.20.203.0 and 0.21.0 versions: (use 0.20.203.0 and 0.21.0 when applied)
 
 - create a installation directory, for example, /opt
   mkdir /opt
@@ -24,15 +17,17 @@ For install and test hadoop 0.21.0 version:
 - go to installation directory
   cd /opt
 
-- Download tarball from http://www.apache.org/dist/hadoop/core/hadoop-0.21.0/
+- Download tarball from http://www.apache.org/dist/hadoop/core/
   ls -lagt /opt/hadoop-0.21.0.tar.gz
 
 - install, test hadoop and stop
   Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.0 /opt
 
+  answer Y for "Re-format filesystem in ... ? (Y or N)"
 
 
-For compile, install and test 0.21.1 and 0.22.0 version (use 0.21.1 or 0.22.0 when applied)
+
+For compile, install and test 0.21.1 and 0.22.0 versions (use 0.21.1 or 0.22.0 when applied) from http://svn.apache.org/viewvc/hadoop/common/branches/
 
 - create a installation directory, for example, /opt
   mkdir /opt
