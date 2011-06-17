@@ -4,11 +4,11 @@
 <configuration>
   <property>
     <name>dfs.namenode.name.dir</name>
-    <value>/opt/test/0.22.0/dfs/name</value>
+    <value>/opt/test/0.21.0/dfs/name</value>
   </property>
   <property>
     <name>dfs.datanode.data.dir</name>
-    <value>/opt/test/0.22.0/dfs/data</value>
+    <value>/opt/test/0.21.0/dfs/data</value>
   </property>
   <property>
     <name>dfs.datanode.address</name>
@@ -25,7 +25,7 @@
 
         <property>
           <name>raid.config.file</name>
-          <value>/opt/test/0.22.0/hdfs/DFS/conf/raid.xml</value>
+          <value>/opt/test/0.21.0/hdfs/DFS/conf/raid.xml</value>
           <description>This is needed by the RaidNode </description>
         </property>
        <property>
