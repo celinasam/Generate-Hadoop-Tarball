@@ -32,9 +32,9 @@ rm -fr "$WORKDIR"
 mkdir "$WORKDIR"
 
 # untar the sub-projects
-cat "$2" | (cd "$WORKDIR"; tar xzf -)
 cat "$3" | (cd "$WORKDIR"; tar xzf -)
 cat "$4" | (cd "$WORKDIR"; tar xzf -)
+cat "$5" | (cd "$WORKDIR"; tar xzf -)
 
 # cd into the work directory
 cd "$WORKDIR"
@@ -82,9 +82,9 @@ for proj in hdfs mapred; do
 done
 
 # get our jar files
-cp /opt/hadoop-common/build/*.jar .
-cp /opt/hadoop-hdfs/build/*.jar .
-cp /opt/hadoop-mapreduce/build/*.jar .
+cp /$2/hadoop-common/build/*.jar .
+cp /$2/hadoop-hdfs/build/*.jar .
+cp /$2/hadoop-mapreduce/build/*.jar .
 
 # tar up the result
 cd ..

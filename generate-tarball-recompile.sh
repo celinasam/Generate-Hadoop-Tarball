@@ -25,7 +25,7 @@ fi
 
 cd $2/hadoop-common/build
 
-$bin/tar-munge $VERSION $2/hadoop-{common,hdfs,mapreduce}/build/*$VERSION*.tar.gz
+$bin/tar-munge $VERSION $2 $2/hadoop-{common,hdfs,mapreduce}/build/*$VERSION*.tar.gz
 
 finish_time=$(date +%s)
 echo "Time duration: $(($((finish_time - start_time))/60)) min $(($((finish_time - start_time))%60)) secs."

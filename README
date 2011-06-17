@@ -93,7 +93,7 @@ For configure and test raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.21.0,
 - edit conf/raid.xml with correct srcPath prefix and erasure code type (xor for 0.21.* e xor or rs for 0.22.0)
 
 - configure raid
-  conf-raid.sh 0.21.0 /opt
+  ./conf-raid.sh 0.21.0 /opt
 
 - edit conf/hdfs-raid-site.xml with correct paths and others parameters
 
@@ -108,14 +108,16 @@ For configure and test raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.21.0,
 - test new configurations
   start-dfs.sh
   start-mapred.sh
-  start-raidnode.sh
-
-- show raid configuration
-  hadoop org.apache.hadoop.raid.RaidShell -showConfig
 
 - copy to hdfs at least one file with more than 128MB of size (2 blocks of 64MB)
   an example: ubuntu-10.10-netbook-i386.iso file has about 700MB
   hadoop fs -copyFromLocal ubuntu-10.10-netbook-i386.iso input
+
+- start raid node
+  start-raidnode.sh
+
+- show raid configuration
+  hadoop org.apache.hadoop.raid.RaidShell -showConfig
 
 - stop test
   stop-raidnode.sh
