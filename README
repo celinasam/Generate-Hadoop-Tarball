@@ -58,6 +58,8 @@ For compile, install and test 0.21.1 and 0.22.0 versions (use 0.21.1 or 0.22.0 w
 - all shell files with execution permission
   chmod +x src/buildscripts/*.sh
 
+- you can do modifications on source code
+
 - go to installation directory of Generate-Hadoop-Tarball
   cd Generate-Hadoop-Tarball
 
