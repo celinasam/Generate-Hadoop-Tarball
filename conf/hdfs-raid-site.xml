@@ -4,11 +4,11 @@
 <configuration>
   <property>
     <name>dfs.namenode.name.dir</name>
-    <value>/opt/test/0.21.0/dfs/name</value>
+    <value>/mnt/test/0.21.0/dfs/name</value>
   </property>
   <property>
     <name>dfs.datanode.data.dir</name>
-    <value>/opt/test/0.21.0/dfs/data</value>
+    <value>/mnt/test/0.21.0/dfs/data</value>
   </property>
   <property>
     <name>dfs.datanode.address</name>
@@ -22,56 +22,54 @@
     <name>dfs.web.ugi</name>
     <value>hadoop,hadoop</value>
   </property>
-
-        <property>
-          <name>raid.config.file</name>
-          <value>/opt/test/0.21.0/hdfs/DFS/conf/raid.xml</value>
-          <description>This is needed by the RaidNode </description>
-        </property>
-       <property>
-         <name>fs.hdfs.impl</name>
-         <value>org.apache.hadoop.hdfs.DistributedRaidFileSystem</value>
-         <description>The FileSystem for hdfs: uris.</description>
-       </property>
-        <property>
-          <name>hdfs.raid.locations</name>
-          <value>hdfs://localhost:9000/raid</value>
-          <description>The location for parity files. If this is
-          is not defined, then defaults to /raid. 
-          </description>
-        </property>
-       <property>
-          <name>hdfs.raid.stripeLength</name>
-          <value>10</value>
-          <description>The number of blocks in a file to be combined into 
+  <property>
+    <name>raid.config.file</name>
+    <value>/mnt/test/0.21.0/hdfs/DFS/conf/raid.xml</value>
+    <description>This is needed by the RaidNode </description>
+  </property>
+  <property>
+     <name>fs.hdfs.impl</name>
+     <value>org.apache.hadoop.hdfs.DistributedRaidFileSystem</value>
+     <description>The FileSystem for hdfs: uris.</description>
+  </property>
+  <property>
+     <name>hdfs.raid.locations</name>
+     <value>hdfs://localhost:9000/raid</value>
+     <description>The location for parity files. If this is
+     is not defined, then defaults to /raid. 
+     </description>
+  </property>
+  <property>
+     <name>hdfs.raid.stripeLength</name>
+     <value>10</value>
+     <description>The number of blocks in a file to be combined into 
           a single raid parity block. The default value is 5. The lower
           the number the greater is the disk space you will save when you
           enable raid.
-          </description>
-        </property>
-        <property>
-          <name>fs.raidnode.local</name>
-          <value>true</value>
-          <description>If you do not want to use your map-reduce cluster to
+     </description>
+  </property>
+  <property>
+     <name>fs.raidnode.local</name>
+     <value>true</value>
+     <description>If you do not want to use your map-reduce cluster to
           raid files in parallel, then specify "true". By default, this
           value is false, which means that the RaidNode uses the default
           map-reduce cluster to generate parity blocks.
-          </description>
-        </property>
-        <property>
-          <name>raid.classname</name>
-          <value>org.apache.hadoop.raid.DistRaidNode</value>
-          <description>Specify which implementation of RaidNode to use
+     </description>
+  </property>
+  <property>
+      <name>raid.classname</name>
+      <value>org.apache.hadoop.raid.DistRaidNode</value>
+      <description>Specify which implementation of RaidNode to use
 	  (class name).
-          </description>
-        </property>
-        <property>
-          <name>raid.policy.rescan.interval</name>
-          <value>600000</value>
-          <description>Specify the periodicity in milliseconds after which
+      </description>
+  </property>
+  <property>
+      <name>raid.policy.rescan.interval</name>
+      <value>600000</value>
+      <description>Specify the periodicity in milliseconds after which
           all source paths are rescanned and parity blocks recomputed if 
           necessary. By default, this value is 1 hour.
-          </description>
-        </property>
-
+      </description>
+  </property>
 </configuration>
