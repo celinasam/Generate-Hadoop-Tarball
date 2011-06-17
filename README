@@ -28,7 +28,7 @@ For install and test hadoop 0.20.203.0, 0.21.0, 0.21.1 and 0.22.0 versions: (use
 
 
 
-For compile, install and test 0.21.1 (branch 0.21) and 0.22.0 versions (branch 0.22) (use 0.21.1 or 0.22.0 when applied) from http://svn.apache.org/viewvc/hadoop/common/branches/
+For compile, install and test 0.21.1 (branch 0.21) and 0.22.0 versions (branch 0.22) (use 0.21.1 or 0.22.0 when applied) from http://svn.apache.org/viewvc/hadoop/common/branches/ Tarballs are generated without documentation and source code and for 32 bits binary.
 
 - create a installation directory, for example, /opt
   mkdir /opt
