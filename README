@@ -24,7 +24,7 @@ For install and test hadoop 0.21.0 version:
 - go to installation directory
   cd /opt
 
-- Download tarball from http://www.apache.org/dist/hadoop/core/
+- Download tarball from http://www.apache.org/dist/hadoop/core/hadoop-0.21.0/
   ls -lagt /opt/hadoop-0.21.0.tar.gz
 
 - install, test hadoop and stop
@@ -46,7 +46,7 @@ For compile, install and test 0.21.1 and 0.22.0 version (use 0.21.1 or 0.22.0 wh
   rm -rf /opt/hadoop-mapreduce
 
 - make a checkout of hadoop svn repositories
-  ./Generate-Hadoop-Tarball/checkout.sh 0.21.1 /opt
+  Generate-Hadoop-Tarball/checkout.sh 0.21.1 /opt
 
 - verify /opt/check-{common,hdfs,mapreduce}.out
   tail /opt/check-{common,hdfs,mapreduce}.out
@@ -82,15 +82,15 @@ For compile, install and test 0.21.1 and 0.22.0 version (use 0.21.1 or 0.22.0 wh
   cd /opt
 
 - install, test hadoop and stop
-  ./Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.1 /opt
+  Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.1 /opt
 
 
-For configure and test raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.20.1, 0.21.0, 0.21.1 and 0.22.0 when applied)
+For configure and test raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.21.0, 0.21.1 and 0.22.0 when applied)
 
 - go to installation directory of Generate-Hadoop-Tarball
   cd Generate-Hadoop-Tarball
 
-- edit conf/raid.xml with correct srcPath prefix and erasure code type (xor or rs)
+- edit conf/raid.xml with correct srcPath prefix and erasure code type (xor for 0.21.* e xor or rs for 0.22.0)
 
 - configure raid
   conf-raid.sh 0.21.0 /opt
@@ -100,7 +100,7 @@ For configure and test raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.20.1,
 - copy new hdfs-site.xml 
   cp conf/hdfs-raid-site.xml /opt/test/hadoop-0.21.0/conf/hdfs-site.xml
 
-- edit hadoop-bashrc.sh with correct paths and save like hadoop-bashrc-<version>.sh (use 0.20.1, 0.21.0, 0.21.1 and 0.22.0)
+- edit hadoop-bashrc.sh with correct paths and save like hadoop-bashrc-<version>.sh (use 0.21.0, 0.21.1 and 0.22.0)
 
 - define environment variables
   . hadoop-bashrc-<version>.sh
