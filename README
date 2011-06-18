@@ -5,24 +5,43 @@ All instructions are made for pseudo-distributed operation (for hadoop running o
 
 For download Generated-Hadoop-Tarball:
 
-- git clone https://github.com/celinasam/Generate-Hadoop-Tarball
+  $ git clone https://github.com/celinasam/Generate-Hadoop-Tarball
 
+Prerequisites:
+
+JDK1.5
+Java 1.6
+
+ssh and sshd
+This will enable passwordless ssh login to the local machine. (You can verify that this works by executing ssh localhost.) The ~/.ssh/id_dsa.pub and authorized_keys files should be replicated on all machines in the cluster.
+  $ ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
+  $ cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
+
+Apache Forrest
+Apache Ant version 1.7.1
+Apache Ivy
+
+- create user and group hadoop using adduser and addgroup
+  $ sudo chown hadoop:hadoop /opt
+
+
+See more in http://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-single-node-cluster/
 
 
 For install and test hadoop 0.20.203.0, 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.20.203.0, 0.21.0, 0.21.1 and 0.22.0 when applied)
 
 - create a installation directory, for example, /opt
-  mkdir /opt
+  $ mkdir /opt
 
 - go to installation directory
-  cd /opt
+  $ cd /opt
 
 - Download tarball from http://www.apache.org/dist/hadoop/core/ for 0.20.203.0 and 0.21.0 versions
 - Generate tarball using next instructions for 0.21.1 and 0.22.0 versions
-  ls -lagt /opt/hadoop-0.21.0.tar.gz
+  $ ls -lagt /opt/hadoop-0.21.0.tar.gz
 
 - install, test hadoop and stop
-  Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.0 /opt
+  $ Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.0 /opt
 
   answer Y for "Re-format filesystem in ... ? (Y or N)"
 
@@ -31,94 +50,95 @@ For install and test hadoop 0.20.203.0, 0.21.0, 0.21.1 and 0.22.0 versions: (use
 For compile, install and test 0.21.1 (branch 0.21) and 0.22.0 versions (branch 0.22) (use 0.21.1 or 0.22.0 when applied) from http://svn.apache.org/viewvc/hadoop/common/branches/ Tarballs are generated without documentation and source code and for 32 bits binary.
 
 - create a installation directory, for example, /opt
-  mkdir /opt
+  $ mkdir /opt
 
 - go to installation directory
-  cd /opt
+  $ cd /opt
 
 - be sure if common, hdfs and mapreduce do not exist
-  rm -rf /opt/hadoop-common
-  rm -rf /opt/hadoop-hdfs
-  rm -rf /opt/hadoop-mapreduce
+  $ rm -rf /opt/hadoop-common
+  $ rm -rf /opt/hadoop-hdfs
+  $ rm -rf /opt/hadoop-mapreduce
 
 - make a checkout of hadoop svn repositories
-  Generate-Hadoop-Tarball/checkout.sh 0.21.1 /opt
+  $ Generate-Hadoop-Tarball/checkout.sh 0.21.1 /opt
 
 - verify /opt/check-{common,hdfs,mapreduce}.out
-  tail /opt/check-{common,hdfs,mapreduce}.out
+  $ tail /opt/check-{common,hdfs,mapreduce}.out
 
 - go to common installation directory
-  cd /opt/hadoop-common
+  $ cd /opt/hadoop-common
 
 - apply patch HADOOP-6342.patch https://issues.apache.org/jira/browse/HADOOP-6342
-  patch -p0 < HADOOP-6342.patch
+  $ patch -p0 < HADOOP-6342.patch
 
 - copy combine-bindirs.sh of Generate-Hadoop-Tarball to combine-bindirs.sh
-  cp Generate-Hadoop-Tarball/combine-bindirs.sh src/buildscripts/
+  $ cp Generate-Hadoop-Tarball/combine-bindirs.sh src/buildscripts/
 
 - all shell files with execution permission
-  chmod +x src/buildscripts/*.sh
+  $ chmod +x src/buildscripts/*.sh
 
 - you can do modifications on source code
 
 - go to installation directory of Generate-Hadoop-Tarball
-  cd Generate-Hadoop-Tarball
+  $ cd Generate-Hadoop-Tarball
 
 - generate tarball for first compilation
-  ./generate-tarball.sh 0.21.1 /opt
+  $ ./generate-tarball.sh 0.21.1 /opt
 
 - or regenerate tarball for others compilations
-  ./generate-tarball-recompile.sh 0.21.1 /opt
+  $ ./generate-tarball-recompile.sh 0.21.1 /opt
 
 - if ok then there is a tarball in /opt/hadoop-common/build/
-  ls -lagt /opt/hadoop-common/build/hadoop-0.21.1.tar.gz
+  $ ls -lagt /opt/hadoop-common/build/hadoop-0.21.1.tar.gz
 
 - copy generated tarball to installation directory 
-  cp /opt/hadoop-common/build/hadoop-0.21.1.tar.gz /opt
+  $ cp /opt/hadoop-common/build/hadoop-0.21.1.tar.gz /opt
 
 - go to hadoop installation directory
-  cd /opt
+  $ cd /opt
 
 - install, test hadoop and stop
-  Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.1 /opt
+  $ Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.21.1 /opt
+
 
 
 For configure and test raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.21.0, 0.21.1 and 0.22.0 when applied)
 
 - go to installation directory of Generate-Hadoop-Tarball
-  cd Generate-Hadoop-Tarball
+  $ cd Generate-Hadoop-Tarball
 
 - edit conf/raid.xml with correct srcPath prefix and erasure code type (xor for 0.21.*; xor or rs for 0.22.0)
 
 - configure raid
-  ./conf-raid.sh 0.21.0 /opt
+  $ ./conf-raid.sh 0.21.0 /opt
 
 - edit conf/hdfs-raid-site.xml with correct paths and others parameters
 
 - copy new hdfs-site.xml 
-  cp conf/hdfs-raid-site.xml /opt/test/hadoop-0.21.0/conf/hdfs-site.xml
+  $ cp conf/hdfs-raid-site.xml /opt/test/hadoop-0.21.0/conf/hdfs-site.xml
 
 - edit hadoop-bashrc.sh with correct paths and save like hadoop-bashrc-<version>.sh (use 0.21.0, 0.21.1 and 0.22.0)
 
 - define environment variables
-  . hadoop-bashrc-<version>.sh
+  $ . hadoop-bashrc-<version>.sh
 
 - test new configurations
-  start-dfs.sh
-  start-mapred.sh
+  $ start-dfs.sh
+  $ start-mapred.sh
 
 - see info about namenode in your browser. you can continue if safe mode is off.
   http://localhost:50070
 
 - copy to hdfs at least one file with more than 128MB of size (2 blocks of 64MB)
   an example: ubuntu-10.10-netbook-i386.iso file has about 700MB
-  hadoop fs -copyFromLocal ubuntu-10.10-netbook-i386.iso input
+  $ hadoop fs -copyFromLocal ubuntu-10.10-netbook-i386.iso input
 
 - start raid node
-  start-raidnode.sh
+  $ start-raidnode.sh
 
 - show raid configuration (appears not working for 0.21.*; only for 0.22.0)
-  hadoop org.apache.hadoop.raid.RaidShell -showConfig
+  $ hadoop org.apache.hadoop.raid.RaidShell -showConfig
 
 - see info about namenode in your browser
   http://localhost:50070
@@ -130,6 +150,84 @@ For configure and test raid for 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.21.0,
   http://localhost:50030
 
 - stop test
-  stop-raidnode.sh
-  stop-mapred.sh
-  stop-dfs.sh
+  $ stop-raidnode.sh
+  $ stop-mapred.sh
+  $ stop-dfs.sh
+
+
+
+For compile, install and test facebook hadoop 0.20.1-dev version:
+
+- create a installation directory, for example, /opt
+  $ mkdir /opt
+
+- go to installation directory
+  $ cd /opt
+
+- create a clone
+  $ git clone https://github.com/facebook/hadoop-20-warehouse.git
+
+- apply patch
+  $ cd hadoop-20-warehouse
+  $ patch -p1 < Generate-Hadoop-Tarball/0001-source-code-was-modified-for-correct-compilation-err.patch
+
+- compile
+  $ ant -Dresolvers=internal -Djava5.home=/usr/lib/jvm/jdk1.5.0_22 -Dforrest.home=/opt/apache-forrest-0.9 -Djavac.args="-Xlint -Xmaxwarns 3000" clean binary > ant.log 2>&1
+
+- if ok, there is a tarball in build dir
+  $ ls -lagt /opt/hadoop-20-warehouse/build/hadoop-0.20.1-dev-bin.tar.gz
+
+- copy generated tarball to installation directory 
+  $ cp /opt/hadoop-20-warehouse/build/hadoop-0.20.1-dev-bin.tar.gz /opt
+
+- go to installation directory
+  $ cd /opt
+
+- install, test hadoop and stop (UtilizationCollector and UtilizationReporter do not run)
+ $ Generate-Hadoop-Tarball/run-pseudo-distributed-munged.sh 0.20.1-dev /opt
+
+- go to installation directory of Generate-Hadoop-Tarball
+  $ cd Generate-Hadoop-Tarball
+
+- edit conf/raid.xml with correct srcPath prefix and erasure code type (xor or rs)
+
+- configure raid
+  $ ./conf-raid.sh 0.20.1-dev /opt
+
+- edit conf/hdfs-raid-site.xml with correct paths and others parameters
+
+- copy new hdfs-site.xml 
+  $ cp conf/hdfs-raid-site.xml /opt/test/hadoop-0.20.1-dev/conf/hdfs-site.xml
+
+- edit hadoop-bashrc.sh with correct paths and save like hadoop-bashrc-<version>.sh (use 0.20.1-dev)
+
+- define environment variables
+  $ . hadoop-bashrc-<version>.sh
+
+- test new configurations
+  $ start-dfs.sh
+  $ start-mapred.sh
+
+- see info about namenode in your browser. you can continue if safe mode is off.
+  http://localhost:50070
+
+- copy to hdfs at least one file with more than 128MB of size (2 blocks of 64MB)
+  an example: ubuntu-10.10-netbook-i386.iso file has about 700MB
+  $ hadoop fs -copyFromLocal ubuntu-10.10-netbook-i386.iso input
+
+- show raid configuration (appears not working for 0.21.*; only for 0.22.0)
+  $ hadoop org.apache.hadoop.raid.RaidShell -showConfig
+
+- see info about namenode in your browser
+  http://localhost:50070
+  
+  about task tracker
+  http://localhost:50060
+
+  about job tracker
+  http://localhost:50030
+
+- stop test
+  $ stop-mapred.sh
+  $ stop-dfs.sh
+

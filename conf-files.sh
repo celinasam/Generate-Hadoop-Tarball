@@ -17,6 +17,10 @@ export CLASSPATH=.:$HADOOP_HOME/*:$HADOOP_HOME/lib/*
 cp $thisdir/conf/core-site.xml $HADOOP_HOME/conf
 # cp $thisdir/conf/hdfs-site.xml $HADOOP_HOME/conf
 # cp $thisdir/conf/mapred-site.xml $HADOOP_HOME/conf
+if [[ $VERSION == "0.20.1-dev" ]]; then
+  cp $thisdir/conf/hmon $HADOOP_HOME/conf
+  cp $thisdir/conf/raidnode $HADOOP_HOME/conf
+fi
 
 mv $HADOOP_HOME/conf/hdfs-site.xml $HADOOP_HOME/conf/hdfs-site.xml.old
 touch $HADOOP_HOME/conf/hdfs-site.xml

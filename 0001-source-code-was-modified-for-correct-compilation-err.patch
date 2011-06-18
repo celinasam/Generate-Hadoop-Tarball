@@ -1,0 +1,626 @@
+From 35b9ac3b2d55ff54e3e4abc847305fee99eb05f4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Celina=20d'=20=C3=81vila=20Samogin?= <celinasam@yahoo.com>
+Date: Fri, 17 Jun 2011 17:51:33 -0300
+Subject: [PATCH] source code was modified for correct compilation errors
+
+---
+ build.xml                                          |    2 +-
+ .../hadoop/hdfs/DistributedAvatarFileSystem.java   |    2 +-
+ .../java/org/apache/hadoop/raid/RaidFilter.java    |    6 +-
+ .../src/java/org/apache/hadoop/raid/RaidNode.java  |  117 +++++++++++++++++++-
+ .../java/org/apache/hadoop/raid/XOREncoder.java    |   60 ++++++++++
+ .../hadoop/hdfs/CorruptFileBlockIterator.java      |    4 +-
+ .../hadoop/hdfs/protocol/ClientProtocol.java       |    1 +
+ .../hadoop/hdfs/protocol/CorruptFileBlocks.java    |  108 ------------------
+ .../hdfs/protocol/CorruptFileBlocks.java.old       |  108 ++++++++++++++++++
+ .../hadoop/hdfs/server/namenode/NameNode.java      |    1 +
+ .../hdfs/protocol/TestCorruptFileBlocks.java       |    3 +-
+ .../hadoop/hdfs/server/namenode/TestFsck.java      |    2 +-
+ 12 files changed, 295 insertions(+), 119 deletions(-)
+ delete mode 100644 src/hdfs/org/apache/hadoop/hdfs/protocol/CorruptFileBlocks.java
+ create mode 100644 src/hdfs/org/apache/hadoop/hdfs/protocol/CorruptFileBlocks.java.old
+
+diff --git a/build.xml b/build.xml
+index c7913dd..8bcbe59 100644
+--- a/build.xml
++++ b/build.xml
+@@ -719,7 +719,7 @@
+   <!-- ================================================================== -->
+   <!--                                                                    -->
+   <!-- ================================================================== -->
+-  <target name="jar-test" depends="compile-core-test" description="Make hadoop-test.jar">
++  <target name="jar-test" depends="compile-examples, compile-tools, generate-test-records" description="Make hadoop-test.jar">
+     <jar jarfile="${build.dir}/${final.name}-test.jar"
+          basedir="${test.build.classes}">
+          <manifest>
+diff --git a/src/contrib/highavailability/src/java/org/apache/hadoop/hdfs/DistributedAvatarFileSystem.java b/src/contrib/highavailability/src/java/org/apache/hadoop/hdfs/DistributedAvatarFileSystem.java
+index 18140cd..d069ba0 100644
+--- a/src/contrib/highavailability/src/java/org/apache/hadoop/hdfs/DistributedAvatarFileSystem.java
++++ b/src/contrib/highavailability/src/java/org/apache/hadoop/hdfs/DistributedAvatarFileSystem.java
+@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
+ 
+ import org.apache.hadoop.conf.Configuration;
+ import org.apache.hadoop.fs.ContentSummary;
++import org.apache.hadoop.fs.CorruptFileBlocks;
+ import org.apache.hadoop.fs.FileStatus;
+ import org.apache.hadoop.fs.BlockLocation;
+ import org.apache.hadoop.fs.Path;
+@@ -18,7 +19,6 @@ import org.apache.hadoop.fs.permission.FsPermission;
+ import org.apache.hadoop.hdfs.protocol.AlreadyBeingCreatedException;
+ import org.apache.hadoop.hdfs.protocol.Block;
+ import org.apache.hadoop.hdfs.protocol.ClientProtocol;
+-import org.apache.hadoop.hdfs.protocol.CorruptFileBlocks;
+ import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
+ import org.apache.hadoop.hdfs.protocol.DirectoryListing;
+ import org.apache.hadoop.hdfs.protocol.HdfsFileStatus;
+diff --git a/src/contrib/raid/src/java/org/apache/hadoop/raid/RaidFilter.java b/src/contrib/raid/src/java/org/apache/hadoop/raid/RaidFilter.java
+index 3c6ac62..7dc2521 100644
+--- a/src/contrib/raid/src/java/org/apache/hadoop/raid/RaidFilter.java
++++ b/src/contrib/raid/src/java/org/apache/hadoop/raid/RaidFilter.java
+@@ -98,7 +98,7 @@ public class RaidFilter {
+   }
+ 
+   static class TimeBasedFilter extends Configured
+-    implements DirectoryTraversal.FileFilter {
++    implements DirectoryTraversal.Filter {
+     int targetRepl;
+     Path raidDestPrefix;
+     long modTimePeriod;
+@@ -255,9 +255,9 @@ public class RaidFilter {
+   }
+ 
+   static class PreferenceFilter extends Configured
+-    implements DirectoryTraversal.FileFilter {
++    implements DirectoryTraversal.Filter {
+     Path firstChoicePrefix;
+-    DirectoryTraversal.FileFilter secondChoiceFilter;
++    DirectoryTraversal.Filter secondChoiceFilter;
+ 
+     PreferenceFilter(Configuration conf,
+       Path firstChoicePrefix, Path secondChoicePrefix,
+diff --git a/src/contrib/raid/src/java/org/apache/hadoop/raid/RaidNode.java b/src/contrib/raid/src/java/org/apache/hadoop/raid/RaidNode.java
+index 5e48de6..7bd6859 100644
+--- a/src/contrib/raid/src/java/org/apache/hadoop/raid/RaidNode.java
++++ b/src/contrib/raid/src/java/org/apache/hadoop/raid/RaidNode.java
+@@ -23,6 +23,7 @@ import java.io.IOException;
+ import java.lang.reflect.Constructor;
+ import java.lang.reflect.InvocationTargetException;
+ import java.net.InetSocketAddress;
++import java.net.URI;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Collection;
+@@ -43,12 +44,14 @@ import org.apache.hadoop.conf.Configuration;
+ import org.apache.hadoop.fs.BlockLocation;
+ import org.apache.hadoop.fs.FileStatus;
+ import org.apache.hadoop.fs.FileSystem;
++import org.apache.hadoop.fs.HarFileSystem;
+ import org.apache.hadoop.fs.Path;
+ import org.apache.hadoop.http.HttpServer;
+ import org.apache.hadoop.ipc.ProtocolSignature;
+ import org.apache.hadoop.ipc.RPC;
+ import org.apache.hadoop.ipc.Server;
+ import org.apache.hadoop.net.NetUtils;
++import org.apache.hadoop.raid.ParityFilePair;
+ import org.apache.hadoop.raid.protocol.PolicyInfo;
+ import org.apache.hadoop.raid.protocol.PolicyList;
+ import org.apache.hadoop.raid.protocol.RaidProtocol;
+@@ -605,6 +608,115 @@ public abstract class RaidNode implements RaidProtocol {
+     return new Path(destPathPrefix, makeRelative(srcPath));
+   }
+ 
++  static class ParityFilePair {
++    private Path path;
++    private FileSystem fs;
++    
++    public ParityFilePair( Path path, FileSystem fs) {
++      this.path = path;
++      this.fs = fs;
++    }
++    
++    public Path getPath() {
++      return this.path;
++    }
++    
++    public FileSystem getFileSystem() {
++      return this.fs;
++    }
++    
++  }
++  
++  
++  /**
++   * Returns the Path to the parity file of a given file
++   * 
++   * @param destPathPrefix Destination prefix defined by some policy
++   * @param srcPath Path to the original source file
++   * @param create Boolean value telling whether a new parity file should be created
++   * @return Path object representing the parity file of the source
++   * @throws IOException
++   */
++  static ParityFilePair getParityFile(Path destPathPrefix, Path srcPath, Configuration conf) throws IOException {
++    Path srcParent = srcPath.getParent();
++
++    FileSystem fsDest = destPathPrefix.getFileSystem(conf);
++    FileSystem fsSrc = srcPath.getFileSystem(conf);
++    
++    FileStatus srcStatus = null;
++    try {
++      srcStatus = fsSrc.getFileStatus(srcPath);
++    } catch (java.io.FileNotFoundException e) {
++      return null;
++    }
++    
++    Path outDir = destPathPrefix;
++    if (srcParent != null) {
++      if (srcParent.getParent() == null) {
++        outDir = destPathPrefix;
++      } else {
++        outDir = new Path(destPathPrefix, makeRelative(srcParent));
++      }
++    }
++
++    
++    //CASE 1: CHECK HAR - Must be checked first because har is created after
++    // parity file and returning the parity file could result in error while
++    // reading it.
++    Path outPath =  getOriginalParityFile(destPathPrefix, srcPath);
++    String harDirName = srcParent.getName() + HAR_SUFFIX; 
++    Path HarPath = new Path(outDir,harDirName);
++    if (fsDest.exists(HarPath)) {  
++      URI HarPathUri = HarPath.toUri();
++      Path inHarPath = new Path("har://",HarPathUri.getPath()+"/"+outPath.toUri().getPath());
++      FileSystem fsHar = new HarFileSystem(fsDest);
++      fsHar.initialize(inHarPath.toUri(), conf);
++      if (fsHar.exists(inHarPath)) {
++        FileStatus inHar = fsHar.getFileStatus(inHarPath);
++        if (inHar.getModificationTime() == srcStatus.getModificationTime()) {
++          return new ParityFilePair(inHarPath,fsHar);
++        }
++      }
++    }
++    
++    //CASE 2: CHECK PARITY
++    try {
++      FileStatus outHar = fsDest.getFileStatus(outPath);
++      if (outHar.getModificationTime() == srcStatus.getModificationTime()) {
++        return new ParityFilePair(outPath,fsDest);
++      }
++    } catch (java.io.FileNotFoundException e) {
++    }
++
++    return null; // NULL if no parity file
++  }
++
++  static ParityFilePair xorParityForSource(Path srcPath, Configuration conf)
++      throws IOException {
++    try {
++      Path destPath = xorDestinationPath(conf);
++      return getParityFile(destPath, srcPath, conf);
++    } catch (FileNotFoundException e) {
++    }
++    return null;
++  }
++
++  static ParityFilePair rsParityForSource(Path srcPath, Configuration conf)
++      throws IOException {
++    try {
++      Path destPath = rsDestinationPath(conf);
++      return getParityFile(destPath, srcPath, conf);
++    } catch (FileNotFoundException e) {
++    }
++    return null;
++  }
++
++  private ParityFilePair getParityFile(Path destPathPrefix, Path srcPath)
++      throws IOException {
++    return getParityFile(destPathPrefix, srcPath, conf);
++  }
++
++
+   static long numBlocks(FileStatus stat) {
+     return (long) Math.ceil(stat.getLen() * 1.0 / stat.getBlockSize());
+   }
+@@ -784,7 +896,8 @@ public abstract class RaidNode implements RaidProtocol {
+     ErasureCodeType code, Decoder decoder, int stripeLength,
+       long corruptOffset) throws IOException {
+     // Test if parity file exists
+-    ParityFilePair ppair = ParityFilePair.getParityFile(code, srcPath, conf);
++    org.apache.hadoop.raid.ParityFilePair ppair = null;
++    ppair = org.apache.hadoop.raid.ParityFilePair.getParityFile(code, srcPath, conf);
+     if (ppair == null) {
+       LOG.error("Could not find parity file for " + srcPath);
+       return null;
+@@ -919,7 +1032,7 @@ public abstract class RaidNode implements RaidProtocol {
+         Path destPathPrefix = new Path(destPrefix).makeQualified(destFs);
+         if (statuses != null) {
+           for (FileStatus status : statuses) {
+-            if (ParityFilePair.getParityFile(info.getErasureCode(),
++            if (org.apache.hadoop.raid.ParityFilePair.getParityFile(info.getErasureCode(),
+                 status.getPath().makeQualified(srcFs), conf) == null ) {
+               LOG.debug("Cannot archive " + destPath + 
+                   " because it doesn't contain parity file for " +
+diff --git a/src/contrib/raid/src/java/org/apache/hadoop/raid/XOREncoder.java b/src/contrib/raid/src/java/org/apache/hadoop/raid/XOREncoder.java
+index 5a57ab3..3dc4a6a 100644
+--- a/src/contrib/raid/src/java/org/apache/hadoop/raid/XOREncoder.java
++++ b/src/contrib/raid/src/java/org/apache/hadoop/raid/XOREncoder.java
+@@ -57,6 +57,66 @@ public class XOREncoder extends Encoder {
+   }
+ 
+   @Override
++  protected void encodeStripeImpl(
++    InputStream[] blocks,
++    long stripeStartOffset,
++    long blockSize,
++    OutputStream[] outs,
++    Progressable reporter) throws IOException {
++    int boundedBufferCapacity = 1;
++    ParallelStreamReader parallelReader = new ParallelStreamReader(
++      reporter, blocks, bufSize, parallelism, boundedBufferCapacity);
++    parallelReader.start();
++    try {
++      encodeStripeParallel(blocks, stripeStartOffset, blockSize, outs,
++        reporter, parallelReader);
++    } finally {
++      parallelReader.shutdown();
++    }
++  }
++
++  protected void encodeStripeParallel(
++    InputStream[] blocks,
++    long stripeStartOffset,
++    long blockSize,
++    OutputStream[] outs,
++    Progressable reporter,
++    ParallelStreamReader parallelReader) throws IOException {
++    LOG.info("Performing XOR with bufSize = " + bufSize +
++      ", blockSize = " + blockSize);
++    ParallelStreamReader.ReadResult readResult;
++    for (long encoded = 0; encoded < blockSize; encoded += bufSize) {
++      try {
++        readResult = parallelReader.getReadResult();
++      } catch (InterruptedException e) {
++        throw new IOException("Interrupted while waiting for read result");
++      }
++
++      xor(readResult.readBufs, writeBufs[0]);
++      reporter.progress();
++
++      // Write to output
++      outs[0].write(writeBufs[0], 0, bufSize);
++      reporter.progress();
++    }
++  }
++
++  static void xor(byte[][] inputs, byte[] output) {
++    int bufSize = output.length;
++    // Get the first buffer's data.
++    for (int j = 0; j < bufSize; j++) {
++      output[j] = inputs[0][j];
++    }
++    // XOR with everything else.
++    for (int i = 1; i < inputs.length; i++) {
++      for (int j = 0; j < bufSize; j++) {
++        output[j] ^= inputs[i][j];
++      }
++    }
++  }
++
++
++  @Override
+   public Path getParityTempPath() {
+     return new Path(RaidNode.xorTempPrefix(conf));
+   }
+diff --git a/src/hdfs/org/apache/hadoop/hdfs/CorruptFileBlockIterator.java b/src/hdfs/org/apache/hadoop/hdfs/CorruptFileBlockIterator.java
+index 2fedd6b..843c014 100644
+--- a/src/hdfs/org/apache/hadoop/hdfs/CorruptFileBlockIterator.java
++++ b/src/hdfs/org/apache/hadoop/hdfs/CorruptFileBlockIterator.java
+@@ -21,7 +21,7 @@ package org.apache.hadoop.hdfs;
+ import java.io.IOException;
+ import java.util.NoSuchElementException;
+ 
+-import org.apache.hadoop.hdfs.protocol.CorruptFileBlocks;
++import org.apache.hadoop.fs.CorruptFileBlocks;
+ import org.apache.hadoop.fs.Path;
+ import org.apache.hadoop.fs.RemoteIterator;
+ 
+@@ -103,4 +103,4 @@ public class CorruptFileBlockIterator implements RemoteIterator<Path> {
+ 
+     return result;
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/src/hdfs/org/apache/hadoop/hdfs/protocol/ClientProtocol.java b/src/hdfs/org/apache/hadoop/hdfs/protocol/ClientProtocol.java
+index 921f528..0a2da0d 100644
+--- a/src/hdfs/org/apache/hadoop/hdfs/protocol/ClientProtocol.java
++++ b/src/hdfs/org/apache/hadoop/hdfs/protocol/ClientProtocol.java
+@@ -26,6 +26,7 @@ import org.apache.hadoop.hdfs.server.common.UpgradeStatusReport;
+ import org.apache.hadoop.fs.permission.*;
+ import org.apache.hadoop.fs.ContentSummary;
+ import org.apache.hadoop.fs.FileStatus;
++import org.apache.hadoop.fs.CorruptFileBlocks;
+ 
+ /**********************************************************************
+  * ClientProtocol is used by user code via 
+diff --git a/src/hdfs/org/apache/hadoop/hdfs/protocol/CorruptFileBlocks.java b/src/hdfs/org/apache/hadoop/hdfs/protocol/CorruptFileBlocks.java
+deleted file mode 100644
+index 7b69f0b..0000000
+--- a/src/hdfs/org/apache/hadoop/hdfs/protocol/CorruptFileBlocks.java
++++ /dev/null
+@@ -1,108 +0,0 @@
+-/**
+- * Licensed to the Apache Software Foundation (ASF) under one
+- * or more contributor license agreements.  See the NOTICE file
+- * distributed with this work for additional information
+- * regarding copyright ownership.  The ASF licenses this file
+- * to you under the Apache License, Version 2.0 (the
+- * "License"); you may not use this file except in compliance
+- * with the License.  You may obtain a copy of the License at
+- *
+- *     http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-package org.apache.hadoop.hdfs.protocol;
+-
+-import org.apache.hadoop.io.Writable;
+-import org.apache.hadoop.io.Text;
+-import java.io.DataInput;
+-import java.io.DataOutput;
+-import java.io.IOException;
+-import java.util.Arrays;
+-
+-/**
+- * Contains a list of paths corresponding to corrupt files and a cookie
+- * used for iterative calls to NameNode.listCorruptFileBlocks.
+- *
+- */
+-public class CorruptFileBlocks implements Writable {
+-  // used for hashCode
+-  private static final int PRIME = 16777619;
+-
+-  private String[] files;
+-  private String cookie;
+-
+-  public CorruptFileBlocks() {
+-    this(new String[0], "");
+-  }
+-
+-  public CorruptFileBlocks(String[] files, String cookie) {
+-    this.files = files;
+-    this.cookie = cookie;
+-  }
+-
+-  public String[] getFiles() {
+-    return files;
+-  }
+-
+-  public String getCookie() {
+-    return cookie;
+-  }
+-
+-  /**
+-   * {@inheritDoc}
+-   */
+-  @Override
+-  public void readFields(DataInput in) throws IOException {
+-    int fileCount = in.readInt();
+-    files = new String[fileCount];
+-    for (int i = 0; i < fileCount; i++) {
+-      files[i] = Text.readString(in);
+-    }
+-    cookie = Text.readString(in);
+-  }
+-
+-  /**
+-   * {@inheritDoc}
+-   */
+-  @Override
+-  public void write(DataOutput out) throws IOException {
+-    out.writeInt(files.length);
+-    for (int i = 0; i < files.length; i++) {
+-      Text.writeString(out, files[i]);
+-    }
+-    Text.writeString(out, cookie);
+-  }
+-
+-  /**
+-   * {@inheritDoc}
+-   */
+-  public boolean equals(Object obj) {
+-    if (this == obj) {
+-      return true;
+-    }
+-    if (!(obj instanceof CorruptFileBlocks)) {
+-      return false;
+-    }
+-    CorruptFileBlocks other = (CorruptFileBlocks) obj;
+-    return cookie.equals(other.cookie) &&
+-      Arrays.equals(files, other.files);
+-  }
+-
+-  /**
+-   * {@inheritDoc}
+-   */
+-  public int hashCode() {
+-    int result = cookie.hashCode();
+-
+-    for (String file : files) {
+-      result = PRIME * result + file.hashCode();
+-    }
+-
+-    return result;
+-  }
+-}
+diff --git a/src/hdfs/org/apache/hadoop/hdfs/protocol/CorruptFileBlocks.java.old b/src/hdfs/org/apache/hadoop/hdfs/protocol/CorruptFileBlocks.java.old
+new file mode 100644
+index 0000000..7b69f0b
+--- /dev/null
++++ b/src/hdfs/org/apache/hadoop/hdfs/protocol/CorruptFileBlocks.java.old
+@@ -0,0 +1,108 @@
++/**
++ * Licensed to the Apache Software Foundation (ASF) under one
++ * or more contributor license agreements.  See the NOTICE file
++ * distributed with this work for additional information
++ * regarding copyright ownership.  The ASF licenses this file
++ * to you under the Apache License, Version 2.0 (the
++ * "License"); you may not use this file except in compliance
++ * with the License.  You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package org.apache.hadoop.hdfs.protocol;
++
++import org.apache.hadoop.io.Writable;
++import org.apache.hadoop.io.Text;
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++import java.util.Arrays;
++
++/**
++ * Contains a list of paths corresponding to corrupt files and a cookie
++ * used for iterative calls to NameNode.listCorruptFileBlocks.
++ *
++ */
++public class CorruptFileBlocks implements Writable {
++  // used for hashCode
++  private static final int PRIME = 16777619;
++
++  private String[] files;
++  private String cookie;
++
++  public CorruptFileBlocks() {
++    this(new String[0], "");
++  }
++
++  public CorruptFileBlocks(String[] files, String cookie) {
++    this.files = files;
++    this.cookie = cookie;
++  }
++
++  public String[] getFiles() {
++    return files;
++  }
++
++  public String getCookie() {
++    return cookie;
++  }
++
++  /**
++   * {@inheritDoc}
++   */
++  @Override
++  public void readFields(DataInput in) throws IOException {
++    int fileCount = in.readInt();
++    files = new String[fileCount];
++    for (int i = 0; i < fileCount; i++) {
++      files[i] = Text.readString(in);
++    }
++    cookie = Text.readString(in);
++  }
++
++  /**
++   * {@inheritDoc}
++   */
++  @Override
++  public void write(DataOutput out) throws IOException {
++    out.writeInt(files.length);
++    for (int i = 0; i < files.length; i++) {
++      Text.writeString(out, files[i]);
++    }
++    Text.writeString(out, cookie);
++  }
++
++  /**
++   * {@inheritDoc}
++   */
++  public boolean equals(Object obj) {
++    if (this == obj) {
++      return true;
++    }
++    if (!(obj instanceof CorruptFileBlocks)) {
++      return false;
++    }
++    CorruptFileBlocks other = (CorruptFileBlocks) obj;
++    return cookie.equals(other.cookie) &&
++      Arrays.equals(files, other.files);
++  }
++
++  /**
++   * {@inheritDoc}
++   */
++  public int hashCode() {
++    int result = cookie.hashCode();
++
++    for (String file : files) {
++      result = PRIME * result + file.hashCode();
++    }
++
++    return result;
++  }
++}
+diff --git a/src/hdfs/org/apache/hadoop/hdfs/server/namenode/NameNode.java b/src/hdfs/org/apache/hadoop/hdfs/server/namenode/NameNode.java
+index 7d50a26..50293cb 100644
+--- a/src/hdfs/org/apache/hadoop/hdfs/server/namenode/NameNode.java
++++ b/src/hdfs/org/apache/hadoop/hdfs/server/namenode/NameNode.java
+@@ -20,6 +20,7 @@ package org.apache.hadoop.hdfs.server.namenode;
+ import org.apache.commons.logging.*;
+ 
+ import org.apache.hadoop.fs.ContentSummary;
++import org.apache.hadoop.fs.CorruptFileBlocks;
+ import org.apache.hadoop.fs.FileStatus;
+ import org.apache.hadoop.fs.Path;
+ import org.apache.hadoop.fs.Trash;
+diff --git a/src/test/org/apache/hadoop/hdfs/protocol/TestCorruptFileBlocks.java b/src/test/org/apache/hadoop/hdfs/protocol/TestCorruptFileBlocks.java
+index 94e4337..aeb7611 100644
+--- a/src/test/org/apache/hadoop/hdfs/protocol/TestCorruptFileBlocks.java
++++ b/src/test/org/apache/hadoop/hdfs/protocol/TestCorruptFileBlocks.java
+@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
+ import org.junit.Test;
+ 
+ import org.apache.hadoop.io.DataOutputBuffer;
++import org.apache.hadoop.fs.CorruptFileBlocks;
+ 
+ public class TestCorruptFileBlocks {
+ 
+@@ -76,4 +77,4 @@ public class TestCorruptFileBlocks {
+       assertTrue("cannot serialize CFB", checkSerialize(cfb));
+     }
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/src/test/org/apache/hadoop/hdfs/server/namenode/TestFsck.java b/src/test/org/apache/hadoop/hdfs/server/namenode/TestFsck.java
+index c80e234..b5571e6 100644
+--- a/src/test/org/apache/hadoop/hdfs/server/namenode/TestFsck.java
++++ b/src/test/org/apache/hadoop/hdfs/server/namenode/TestFsck.java
+@@ -21,13 +21,13 @@ package org.apache.hadoop.hdfs.server.namenode;
+ import junit.framework.TestCase;
+ import org.apache.commons.logging.impl.Log4JLogger;
+ import org.apache.hadoop.conf.Configuration;
++import org.apache.hadoop.fs.CorruptFileBlocks;
+ import org.apache.hadoop.fs.FSDataOutputStream;
+ import org.apache.hadoop.fs.FileSystem;
+ import org.apache.hadoop.fs.Path;
+ import org.apache.hadoop.hdfs.DFSClient;
+ import org.apache.hadoop.hdfs.DFSTestUtil;
+ import org.apache.hadoop.hdfs.MiniDFSCluster;
+-import org.apache.hadoop.hdfs.protocol.CorruptFileBlocks;
+ import org.apache.hadoop.hdfs.protocol.LocatedBlocks;
+ import org.apache.hadoop.hdfs.tools.DFSck;
+ import org.apache.hadoop.io.IOUtils;
+-- 
+1.7.0.4
+

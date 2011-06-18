@@ -29,10 +29,14 @@ pushd test
 
 testdir=`pwd`
 
-if [[ $VERSION == "0.20.203.0" ]]; then
-  tar zxf ../hadoop-$VERSION"rc1.tar.gz"
+if [[ $VERSION == "0.20.1-dev" ]]; then
+ tar zxf ../hadoop-$VERSION-bin.tar.gz
 else
-  tar zxf ../hadoop-$VERSION.tar.gz
+ if [[ $VERSION == "0.20.203.0" ]]; then
+   tar zxf ../hadoop-$VERSION"rc1.tar.gz"
+ else
+   tar zxf ../hadoop-$VERSION.tar.gz
+ fi
 fi
 
 export HADOOP_HOME=$testdir/hadoop-$VERSION
@@ -74,21 +78,26 @@ $HADOOP_HOME/bin/hadoop fs -mkdir input
 $HADOOP_HOME/bin/hadoop fs -copyFromLocal $HADOOP_HOME/LICENSE.txt input
 $HADOOP_HOME/bin/hadoop fs -ls input
 $HADOOP_HOME/bin/hadoop fs -cat input/LICENSE.txt
-if [[ $VERSION == "0.20.203.0" ]]; then
-  $HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples-$VERSION.jar grep \
-  input output Apache
+if [[ $VERSION == "0.20.1-dev" ]]; then
+    $HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-$VERSION-examples.jar grep \
+    input output Apache
 else
-  if [[ $VERSION == "0.21.1" || $VERSION == "0.22.0" ]]; then
-    $HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-mapred-examples-$VERSION-SNAPSHOT.jar grep \
+  if [[ $VERSION == "0.20.203.0" ]]; then
+    $HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples-$VERSION.jar grep \
     input output Apache
   else
-    $HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-mapred-examples-$VERSION.jar grep \
-    input output Apache
+    if [[ $VERSION == "0.21.1" || $VERSION == "0.22.0" ]]; then
+      $HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-mapred-examples-$VERSION-SNAPSHOT.jar grep \
+      input output Apache
+    else
+      $HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-mapred-examples-$VERSION.jar grep \
+      input output Apache
+    fi
   fi
 fi
 
 # following returns a non-zero exit code if no match
-if [[ $VERSION == "0.20.203.0" ]]; then
+if [[ $BRANCH == "0.20" ]]; then
   $HADOOP_HOME/bin/hadoop fs -cat 'output/part-00000' | grep Apache
 else
   $HADOOP_HOME/bin/hadoop fs -cat 'output/part-r-00000' | grep Apache
