@@ -21,11 +21,12 @@ Apache Forrest
 Apache Ant version 1.7.1
 Apache Ivy
 
+See more in http://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-single-node-cluster/
+
 - create user and group hadoop using adduser and addgroup
+- and change /opt
   $ sudo chown hadoop:hadoop /opt
 
-
-See more in http://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-single-node-cluster/
 
 
 For install and test hadoop 0.20.203.0, 0.21.0, 0.21.1 and 0.22.0 versions: (use 0.20.203.0, 0.21.0, 0.21.1 and 0.22.0 when applied)
