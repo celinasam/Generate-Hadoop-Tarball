@@ -196,7 +196,7 @@ For compile, install and test facebook hadoop 0.20.1-dev version:
   $ ./conf-raid.sh 0.20.1-dev /opt
 
 - edit conf/hdfs-raid-site.xml with correct paths and others parameters
-
+  The default for RS is (8,5): 5 blocks per stripe and 3 parity blocks per stripe. The default for XOR is (6,5): 5 blocks per stripe and 1 parity block per stripe. You can configure number of blocks per stripe for RS e XOR. The number of parity blocks per stripe can be configured only for RS. A suggest for consistent aupdate is hdfs.raidrs.paritylength=((hdfs.raid.stripeLength*2)-1)-hdfs.raid.stripeLength. 
 - copy new hdfs-site.xml 
   $ cp conf/hdfs-raid-site.xml /opt/test/hadoop-0.20.1-dev/conf/hdfs-site.xml
 
