@@ -4,13 +4,14 @@
 # cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
 # echo 'export JAVA_HOME=/usr/java/jdk1.6.0_14' >> ~/.bashrc
 
-set -x
+# set -x
 set -e
 
 export VERSION=$1
 export BRANCH=`echo ${VERSION:0:4}`
 
-thisdir=`dirname "$0"`
+# thisdir=`dirname "$0"`
+thisdir=`pwd`
 thisdir=`cd "$thisdir"; pwd`
 
 if [ -d "test" ]; then
@@ -44,7 +45,7 @@ export HADOOP_HOME=$testdir/hadoop-$VERSION
 export PATH=$HADOOP_HOME/bin:$PATH
 export CLASSPATH=.:$HADOOP_HOME/*:$HADOOP_HOME/lib/*
 
-$thisdir/conf-files.sh $VERSION $2 $testdir
+$thisdir/source/Generate-Hadoop-Tarball-master/conf-files.sh $VERSION $2 $testdir
 
 mkdir $2/test/$VERSION/mapreduce
 mkdir $2/test/$VERSION/mapreduce/system

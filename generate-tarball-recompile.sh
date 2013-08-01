@@ -14,6 +14,7 @@ export BRANCH=`echo ${VERSION:0:4}`
 cd $2/hadoop-common/src/buildscripts
 
 make combined-tar
+# make all-ant
 
 if [ -e $2/hadoop-common/build/hadoop-$VERSION.tar.gz ]; then
   rm $2/hadoop-common/build/hadoop-$VERSION.tar.gz

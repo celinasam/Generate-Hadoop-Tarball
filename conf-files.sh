@@ -1,13 +1,16 @@
 #!/bin/bash
 
-set -x
+# set -x
 set -e
 
 export VERSION=$1
 export BRANCH=`echo ${VERSION:0:4}`
 
-thisdir=`dirname "$0"`
+# thisdir=`dirname "$0"`
+thisdir=`pwd`
 thisdir=`cd "$thisdir"; pwd`
+thisdir=/mnt/source/Generate-Hadoop-Tarball-master
+
 
 export HADOOP_HOME=$3/hadoop-$VERSION
 

@@ -4,11 +4,11 @@
 <configuration>
   <property>
     <name>dfs.namenode.name.dir</name>
-    <value>/mnt/test/0.21.0/dfs/name</value>
+    <value>/mnt/test/0.22.1-SNAPSHOT/dfs/name</value>
   </property>
   <property>
     <name>dfs.datanode.data.dir</name>
-    <value>/mnt/test/0.21.0/dfs/data</value>
+    <value>/mnt/test/0.22.1-SNAPSHOT/dfs/data</value>
   </property>
   <property>
     <name>dfs.datanode.address</name>
@@ -24,12 +24,12 @@
   </property>
   <property>
     <name>raid.config.file</name>
-    <value>/mnt/test/0.21.0/hdfs/DFS/conf/raid.xml</value>
+    <value>/mnt/test/0.22.1-SNAPSHOT/hdfs/DFS/conf/raid.xml</value>
     <description>This is needed by the RaidNode </description>
   </property>
   <property>
      <name>fs.hdfs.impl</name>
-     <value>org.apache.hadoop.hdfs.DistributedRaidFileSystem</value>
+     <value>org.apache.hadoop.hdfs.DistributedFileSystem</value>
      <description>The FileSystem for hdfs: uris.</description>
   </property>
   <property>
@@ -63,6 +63,17 @@
       <description>Specify which implementation of RaidNode to use
 	  (class name).
       </description>
+  </property>
+ <property>
+     <name>dfs.block.replicator.classname</name>
+     <value>
+       org.apache.hadoop.hdfs.server.namenode.BlockPlacementPolicyRaid
+     </value>
+     <description>The name of the class which specifies how to place
+       blocks in HDFS. The class BlockPlacementPolicyRaid will try to
+       avoid co-located replicas of the same stripe. This will greatly
+       reduce the probability of raid file corruption.
+     </description>
   </property>
   <property>
       <name>raid.policy.rescan.interval</name>

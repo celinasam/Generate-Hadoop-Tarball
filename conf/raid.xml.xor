@@ -1,7 +1,7 @@
    <configuration>
     <srcPath prefix="hdfs://10.144.74.118:9000/user/hadoop/input">
       <policy name = "teste">
-        <erasureCode>to</erasureCode>
+        <erasureCode>xor</erasureCode>
         <property>
           <name>srcReplication</name>
           <value>3</value>
@@ -18,7 +18,7 @@
         </property>
         <property>
           <name>metaReplication</name>
-          <value>2</value>
+          <value>1</value>
           <description> the replication factor of the RAID meta file
           </description>
         </property>

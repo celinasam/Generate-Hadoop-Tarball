@@ -34,7 +34,7 @@
   </property>
   <property>
      <name>hdfs.raid.locations</name>
-     <value>hdfs://localhost:9000/raid</value>
+     <value>hdfs://10.194.31.187:9000/raid</value>
      <description>The location for parity files. If this is
      is not defined, then defaults to /raid. 
      </description>
@@ -47,6 +47,12 @@
           the number the greater is the disk space you will save when you
           enable raid.
      </description>
+  </property>
+    <property>
+     <name>hdfs.raidrs.paritylength</name>
+     <value>4</value>
+     <description>The number of RS parity blocks. The default is 3.
+   </description>
   </property>
   <property>
      <name>fs.raidnode.local</name>
@@ -63,6 +69,17 @@
       <description>Specify which implementation of RaidNode to use
 	  (class name).
       </description>
+  </property>
+ <property>
+     <name>dfs.block.replicator.classname</name>
+     <value>
+       org.apache.hadoop.hdfs.server.namenode.BlockPlacementPolicyRaid
+     </value>
+     <description>The name of the class which specifies how to place
+       blocks in HDFS. The class BlockPlacementPolicyRaid will try to
+       avoid co-located replicas of the same stripe. This will greatly
+       reduce the probability of raid file corruption.
+     </description>
   </property>
   <property>
       <name>raid.policy.rescan.interval</name>

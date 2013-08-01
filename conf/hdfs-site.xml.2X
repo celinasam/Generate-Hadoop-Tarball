@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/mnt/test/0.22.1-SNAPSHOT/dfs/name</value>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/mnt/test/0.22.1-SNAPSHOT/dfs/data</value>
+  </property>
+  <property>
+    <name>dfs.datanode.address</name>
+    <value>0.0.0.0:50010</value>
+  </property>
+  <property>
+    <name>dfs.replication</name>
+    <value>2</value>
+  </property>
+  <property>
+    <name>dfs.web.ugi</name>
+    <value>hadoop,hadoop</value>
+  </property>
+  <property>
+     <name>fs.hdfs.impl</name>
+     <value>org.apache.hadoop.hdfs.DistributedFileSystem</value>
+     <description>The FileSystem for hdfs: uris.</description>
+  </property>
+ <property>
+     <name>dfs.block.replicator.classname</name>
+     <value>
+       org.apache.hadoop.hdfs.server.namenode.BlockPlacementPolicyRaid
+     </value>
+     <description>The name of the class which specifies how to place
+       blocks in HDFS. The class BlockPlacementPolicyRaid will try to
+       avoid co-located replicas of the same stripe. This will greatly
+       reduce the probability of raid file corruption.
+     </description>
+  </property>
+</configuration>

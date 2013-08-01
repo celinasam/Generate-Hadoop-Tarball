@@ -1,7 +1,7 @@
    <configuration>
-    <srcPath prefix="hdfs://10.144.74.118:9000/user/hadoop/input">
+    <srcPath prefix="hdfs://10.194.31.187:9000/user/hadoop/input">
       <policy name = "teste">
-        <erasureCode>to</erasureCode>
+        <erasureCode>xor</erasureCode>
         <property>
           <name>srcReplication</name>
           <value>3</value>
@@ -11,7 +11,7 @@
         </property>
         <property>
           <name>targetReplication</name>
-          <value>1</value>
+          <value>2</value>
           <description> after RAIDing, decrease the replication factor of a file to 
                         this value.
           </description>
